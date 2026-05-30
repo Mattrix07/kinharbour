@@ -1,5 +1,6 @@
 "use client";
 
+import type { ElementType, ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle,
@@ -72,9 +73,7 @@ export default function ResultsPage() {
     <main className="luxury-shell min-h-screen text-[#17231f]">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 print:hidden">
         <a href="/" className="flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#173f35] text-lg font-semibold text-white shadow-lg shadow-emerald-950/15">
-            K
-          </span>
+          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#173f35] text-lg font-semibold text-white shadow-lg shadow-emerald-950/15">K</span>
           <div>
             <p className="text-xl font-semibold tracking-tight">KinHarbour</p>
             <p className="text-xs font-medium uppercase tracking-[0.2em] text-[#7a8b82]">CarePath report</p>
@@ -221,7 +220,7 @@ export default function ResultsPage() {
   );
 }
 
-function Metric({ icon: Icon, label, value, helper }: { icon: React.ElementType; label: string; value: string; helper: string }) {
+function Metric({ icon: Icon, label, value, helper }: { icon: ElementType; label: string; value: string; helper: string }) {
   return (
     <div className="rounded-3xl border border-[#eadfce] bg-white/70 p-5 shadow-sm backdrop-blur">
       <div className="flex items-start justify-between gap-4">
@@ -238,7 +237,7 @@ function Metric({ icon: Icon, label, value, helper }: { icon: React.ElementType;
   );
 }
 
-function Panel({ icon: Icon, eyebrow, title, children }: { icon: React.ElementType; eyebrow: string; title: string; children: React.ReactNode }) {
+function Panel({ icon: Icon, eyebrow, title, children }: { icon: ElementType; eyebrow: string; title: string; children: ReactNode }) {
   return (
     <section className="premium-card rounded-[2.2rem] p-8">
       <div className="flex items-start gap-4">
