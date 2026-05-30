@@ -4,11 +4,6 @@ import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { AssessmentAnswers } from "../../lib/care-path";
 
-const fieldClass =
-  "w-full rounded-2xl border border-[#dfd3c1] bg-white px-4 py-3 text-[#17231f] outline-none transition focus:border-[#173f35] focus:ring-4 focus:ring-[#173f35]/10";
-
-const labelClass = "text-sm font-semibold text-[#24342e]";
-
 const initialAnswers: AssessmentAnswers = {
   relationship: "Parent",
   location: "Sydney NSW",
@@ -22,14 +17,19 @@ const initialAnswers: AssessmentAnswers = {
   budgetSensitivity: "medium",
 };
 
+const steps = [
+  "Family context",
+  "Current situation",
+  "Support needs",
+  "Preferences",
+];
+
 export default function AssessmentPage() {
   const router = useRouter();
   const [answers, setAnswers] = useState<AssessmentAnswers>(initialAnswers);
+  const [step, setStep] = useState(0);
 
-  const completion = useMemo(() => {
-    const values = Object.values(answers);
-    return Math.round((values.filter(Boolean).length / values.length) * 100);
-  }, [answers]);
+  const completion = useMemo(() => Math.round(((step + 1) / steps.length) * 100), [step]);
 
   function update<K extends keyof AssessmentAnswers>(key: K, value: AssessmentAnswers[K]) {
     setAnswers((current) => ({ ...current, [key]: value }));
@@ -37,6 +37,10 @@ export default function AssessmentPage() {
 
   function submitAssessment(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (step < steps.length - 1) {
+      setStep((current) => current + 1);
+      return;
+    }
     if (typeof window !== "undefined") {
       window.localStorage.setItem("kinharbour-assessment", JSON.stringify(answers));
     }
@@ -44,110 +48,147 @@ export default function AssessmentPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f1e8] text-[#17231f]">
+    <main className="luxury-shell min-h-screen text-[#17231f]">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
-        <a href="/" className="text-xl font-semibold tracking-tight">KinHarbour</a>
-        <a href="/" className="rounded-full border border-[#d8c9b7] bg-white px-5 py-3 text-sm font-semibold text-[#173f35] shadow-sm">Back home</a>
+        <a href="/" className="flex items-center gap-3">
+          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#173f35] text-lg font-semibold text-white shadow-lg shadow-emerald-950/15">K</span>
+          <div>
+            <p className="text-xl font-semibold tracking-tight">KinHarbour</p>
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-[#7a8b82]">Assessment</p>
+          </div>
+        </a>
+        <a href="/" className="rounded-full border border-[#d8c9b7] bg-white/70 px-5 py-3 text-sm font-semibold text-[#173f35] shadow-sm backdrop-blur">Back home</a>
       </nav>
 
       <section className="mx-auto grid max-w-7xl gap-8 px-6 pb-20 pt-6 lg:grid-cols-[0.72fr_1.28fr]">
-        <aside className="h-fit rounded-[2rem] border border-[#dfd3c1] bg-white p-8 shadow-sm lg:sticky lg:top-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#bc7c51]">Assessment</p>
-          <h1 className="mt-4 text-4xl font-semibold tracking-tight">Build a care pathway in under 5 minutes.</h1>
+        <aside className="glass-panel h-fit rounded-[2.2rem] p-8 lg:sticky lg:top-8">
+          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#bc7c51]">Guided assessment</p>
+          <h1 className="mt-4 text-4xl font-semibold tracking-[-0.04em] md:text-5xl">A calmer way to capture what’s changing.</h1>
           <p className="mt-5 leading-8 text-[#5d6d65]">
-            This is not a medical diagnosis. It is a structured decision guide to help families understand likely aged care pathways and next steps.
+            Work through the decision in stages. The result turns this profile into a pathway, risk view and family-ready report.
           </p>
+
           <div className="mt-8">
-            <div className="mb-2 flex items-center justify-between text-sm font-medium text-[#52645c]">
-              <span>Profile completeness</span>
+            <div className="mb-3 flex items-center justify-between text-sm font-semibold text-[#52645c]">
+              <span>Step {step + 1} of {steps.length}</span>
               <span>{completion}%</span>
             </div>
-            <div className="h-3 rounded-full bg-[#eadfce]">
-              <div className="h-3 rounded-full bg-[#173f35]" style={{ width: `${completion}%` }} />
+            <div className="h-3 rounded-full bg-[#eadfce] shadow-inner">
+              <div className="h-3 rounded-full bg-[#173f35] transition-all duration-500" style={{ width: `${completion}%` }} />
             </div>
           </div>
-          <div className="mt-8 rounded-3xl bg-[#f7f1e8] p-5 text-sm leading-6 text-[#5d6d65]">
-            Tip: answer based on the person’s current situation, not what the family hopes will happen.
+
+          <div className="mt-8 grid gap-3">
+            {steps.map((item, index) => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setStep(index)}
+                className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
+                  step === index
+                    ? "bg-[#173f35] text-white shadow-lg shadow-emerald-950/10"
+                    : "bg-white/65 text-[#607269] hover:bg-white"
+                }`}
+              >
+                <span className={`flex h-8 w-8 items-center justify-center rounded-xl ${step === index ? "bg-white/15" : "bg-[#f0e8dc]"}`}>
+                  {index + 1}
+                </span>
+                {item}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-8 rounded-3xl border border-[#dfd3c1]/70 bg-white/55 p-5 text-sm leading-6 text-[#5d6d65] backdrop-blur">
+            This is decision support, not a medical diagnosis. The aim is to help the family know what to prepare and compare next.
           </div>
         </aside>
 
-        <form onSubmit={submitAssessment} className="rounded-[2rem] border border-[#dfd3c1] bg-white p-6 shadow-sm md:p-8">
-          <div className="grid gap-6 md:grid-cols-2">
-            <label className="grid gap-2">
-              <span className={labelClass}>Who are you searching for?</span>
-              <input className={fieldClass} value={answers.relationship} onChange={(e) => update("relationship", e.target.value)} placeholder="Parent, partner, relative" />
-            </label>
-
-            <label className="grid gap-2">
-              <span className={labelClass}>Preferred location</span>
-              <input className={fieldClass} value={answers.location} onChange={(e) => update("location", e.target.value)} placeholder="e.g. Sydney NSW" />
-            </label>
-
-            <label className="grid gap-2">
-              <span className={labelClass}>How urgent is the decision?</span>
-              <select className={fieldClass} value={answers.urgency} onChange={(e) => update("urgency", e.target.value as AssessmentAnswers["urgency"])}>
-                <option value="low">Low — planning ahead</option>
-                <option value="medium">Medium — support needs are increasing</option>
-                <option value="high">High — urgent or unsafe situation</option>
-              </select>
-            </label>
-
-            <label className="grid gap-2">
-              <span className={labelClass}>Current living situation</span>
-              <select className={fieldClass} value={answers.livingSituation} onChange={(e) => update("livingSituation", e.target.value as AssessmentAnswers["livingSituation"])}>
-                <option value="alone">Living alone</option>
-                <option value="with_partner">Living with partner</option>
-                <option value="with_family">Living with family</option>
-                <option value="hospital">In hospital / discharge planning</option>
-                <option value="other">Other</option>
-              </select>
-            </label>
-
-            <RadioGroup
-              title="Mobility support needed"
-              value={answers.mobility}
-              onChange={(value) => update("mobility", value)}
-            />
-            <RadioGroup
-              title="Memory or cognition concerns"
-              value={answers.cognition}
-              onChange={(value) => update("cognition", value)}
-            />
-            <RadioGroup
-              title="Medical or nursing complexity"
-              value={answers.medicalComplexity}
-              onChange={(value) => update("medicalComplexity", value)}
-            />
-            <RadioGroup
-              title="Family capacity to support"
-              value={answers.familyCapacity}
-              onChange={(value) => update("familyCapacity", value)}
-              labels={{ low: "Limited", medium: "Some", high: "Strong" }}
-            />
-
-            <label className="grid gap-2 md:col-span-1">
-              <span className={labelClass}>Preference today</span>
-              <select className={fieldClass} value={answers.homeCarePreference} onChange={(e) => update("homeCarePreference", e.target.value as AssessmentAnswers["homeCarePreference"])}>
-                <option value="home_first">Try to stay at home first</option>
-                <option value="residential_open">Open to residential aged care</option>
-                <option value="unsure">Unsure / comparing options</option>
-              </select>
-            </label>
-
-            <RadioGroup
-              title="Budget sensitivity"
-              value={answers.budgetSensitivity}
-              onChange={(value) => update("budgetSensitivity", value)}
-            />
+        <form onSubmit={submitAssessment} className="premium-card overflow-hidden rounded-[2.2rem]">
+          <div className="border-b border-[#eadfce] bg-white/50 p-6 md:p-8">
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#bc7c51]">{steps[step]}</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-[-0.035em] md:text-5xl">{getStepTitle(step)}</h2>
           </div>
 
-          <div className="mt-8 flex flex-col gap-4 rounded-3xl bg-[#f7f1e8] p-5 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="font-semibold text-[#17231f]">Ready to generate the pathway?</p>
-              <p className="mt-1 text-sm text-[#5d6d65]">Your answers are saved locally in your browser for this first version.</p>
-            </div>
-            <button type="submit" className="rounded-full bg-[#173f35] px-7 py-4 font-semibold text-white shadow-sm transition hover:bg-[#0f2f27]">
-              Generate result
+          <div className="p-6 md:p-8">
+            {step === 0 && (
+              <div className="grid gap-6 md:grid-cols-2">
+                <TextField label="Who are you searching for?" value={answers.relationship} onChange={(value) => update("relationship", value)} placeholder="Parent, partner, relative" />
+                <TextField label="Preferred location" value={answers.location} onChange={(value) => update("location", value)} placeholder="e.g. Sydney NSW" />
+                <ChoiceCard
+                  className="md:col-span-2"
+                  title="Preference today"
+                  value={answers.homeCarePreference}
+                  onChange={(value) => update("homeCarePreference", value as AssessmentAnswers["homeCarePreference"])}
+                  options={[
+                    ["home_first", "Try home first", "The family wants to preserve independence at home if safe."],
+                    ["residential_open", "Open to residential", "The family is ready to compare residential aged care."],
+                    ["unsure", "Unsure", "The family needs structured guidance before deciding."],
+                  ]}
+                />
+              </div>
+            )}
+
+            {step === 1 && (
+              <div className="grid gap-6">
+                <ChoiceCard
+                  title="How urgent is the decision?"
+                  value={answers.urgency}
+                  onChange={(value) => update("urgency", value as AssessmentAnswers["urgency"])}
+                  options={[
+                    ["low", "Planning ahead", "There is time to compare options calmly."],
+                    ["medium", "Needs increasing", "Support needs are becoming more noticeable."],
+                    ["high", "Urgent or unsafe", "There may be immediate safety or discharge pressure."],
+                  ]}
+                />
+                <ChoiceCard
+                  title="Current living situation"
+                  value={answers.livingSituation}
+                  onChange={(value) => update("livingSituation", value as AssessmentAnswers["livingSituation"])}
+                  options={[
+                    ["alone", "Living alone", "More monitoring or safety planning may be needed."],
+                    ["with_partner", "With partner", "Support may depend on partner capacity."],
+                    ["with_family", "With family", "Family care capacity is part of the pathway."],
+                    ["hospital", "Hospital/discharge", "Transition planning may be time sensitive."],
+                    ["other", "Other", "The situation needs a flexible review."],
+                  ]}
+                />
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="grid gap-6 md:grid-cols-2">
+                <ScaleCard title="Mobility support" value={answers.mobility} onChange={(value) => update("mobility", value)} />
+                <ScaleCard title="Memory or cognition" value={answers.cognition} onChange={(value) => update("cognition", value)} />
+                <ScaleCard title="Medical complexity" value={answers.medicalComplexity} onChange={(value) => update("medicalComplexity", value)} />
+                <ScaleCard title="Family capacity" value={answers.familyCapacity} onChange={(value) => update("familyCapacity", value)} labels={{ low: "Limited", medium: "Some", high: "Strong" }} />
+              </div>
+            )}
+
+            {step === 3 && (
+              <div className="grid gap-6">
+                <ScaleCard title="Budget sensitivity" value={answers.budgetSensitivity} onChange={(value) => update("budgetSensitivity", value)} />
+                <div className="rounded-[2rem] border border-[#dfd3c1]/80 bg-[#173f35] p-6 text-white shadow-2xl shadow-emerald-950/15">
+                  <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#d9b18f]">Ready</p>
+                  <h3 className="mt-3 text-3xl font-semibold tracking-tight">Generate the family pathway report.</h3>
+                  <p className="mt-4 max-w-2xl leading-7 text-[#dbe8e3]">
+                    Your current answers will be stored locally in the browser and used to produce the care-path result page.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-4 border-t border-[#eadfce] bg-[#fffaf2]/70 p-6 sm:flex-row sm:items-center sm:justify-between md:p-8">
+            <button
+              type="button"
+              onClick={() => setStep((current) => Math.max(0, current - 1))}
+              disabled={step === 0}
+              className="rounded-full border border-[#d8c9b7] bg-white px-7 py-4 font-semibold text-[#173f35] shadow-sm transition disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Back
+            </button>
+            <button type="submit" className="rounded-full bg-[#173f35] px-8 py-4 font-semibold text-white shadow-xl shadow-emerald-950/15 transition hover:-translate-y-0.5 hover:bg-[#0f2f27]">
+              {step === steps.length - 1 ? "Generate result" : "Continue"}
             </button>
           </div>
         </form>
@@ -156,7 +197,67 @@ export default function AssessmentPage() {
   );
 }
 
-function RadioGroup({
+function getStepTitle(step: number) {
+  return [
+    "Who is this decision for?",
+    "What is happening right now?",
+    "How much support is needed?",
+    "Confirm the final details.",
+  ][step];
+}
+
+function TextField({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (value: string) => void; placeholder: string }) {
+  return (
+    <label className="grid gap-3">
+      <span className="text-sm font-semibold text-[#24342e]">{label}</span>
+      <input
+        className="w-full rounded-2xl border border-[#dfd3c1] bg-white/90 px-4 py-4 text-[#17231f] outline-none transition focus:border-[#173f35] focus:ring-4 focus:ring-[#173f35]/10"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+      />
+    </label>
+  );
+}
+
+function ChoiceCard({
+  title,
+  value,
+  onChange,
+  options,
+  className = "",
+}: {
+  title: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: [string, string, string][];
+  className?: string;
+}) {
+  return (
+    <section className={`grid gap-4 ${className}`}>
+      <h3 className="text-sm font-semibold text-[#24342e]">{title}</h3>
+      <div className="grid gap-3 md:grid-cols-3">
+        {options.map(([optionValue, label, helper]) => (
+          <button
+            key={optionValue}
+            type="button"
+            onClick={() => onChange(optionValue)}
+            className={`rounded-3xl border p-5 text-left transition hover:-translate-y-0.5 ${
+              value === optionValue
+                ? "border-[#173f35] bg-[#173f35] text-white shadow-2xl shadow-emerald-950/15"
+                : "border-[#eadfce] bg-white/80 text-[#17231f] shadow-sm hover:bg-white"
+            }`}
+          >
+            <p className="text-lg font-semibold">{label}</p>
+            <p className={`mt-3 text-sm leading-6 ${value === optionValue ? "text-[#dbe8e3]" : "text-[#5d6d65]"}`}>{helper}</p>
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ScaleCard({
   title,
   value,
   onChange,
@@ -168,18 +269,18 @@ function RadioGroup({
   labels?: Record<"low" | "medium" | "high", string>;
 }) {
   return (
-    <fieldset className="grid gap-3 rounded-3xl border border-[#eadfce] bg-[#fbf8f2] p-5">
-      <legend className="mb-1 text-sm font-semibold text-[#24342e]">{title}</legend>
-      <div className="grid grid-cols-3 gap-2">
+    <fieldset className="rounded-[2rem] border border-[#eadfce] bg-white/70 p-5 shadow-sm">
+      <legend className="px-1 text-sm font-semibold text-[#24342e]">{title}</legend>
+      <div className="mt-4 grid grid-cols-3 gap-2 rounded-2xl bg-[#f7f1e8] p-2">
         {(["low", "medium", "high"] as const).map((level) => (
           <button
             key={level}
             type="button"
             onClick={() => onChange(level)}
-            className={`rounded-2xl px-3 py-3 text-sm font-semibold transition ${
+            className={`rounded-xl px-3 py-3 text-sm font-semibold transition ${
               value === level
-                ? "bg-[#173f35] text-white shadow-sm"
-                : "bg-white text-[#52645c] hover:bg-[#f0e8dc]"
+                ? "bg-[#173f35] text-white shadow-lg shadow-emerald-950/10"
+                : "text-[#52645c] hover:bg-white"
             }`}
           >
             {labels[level]}
