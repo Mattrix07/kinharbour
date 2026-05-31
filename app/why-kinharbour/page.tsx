@@ -26,15 +26,25 @@ const solution = [
   [Users, "Shared planning", "One place for the whole family."],
 ] as const;
 
+function KinHarbourLogo() {
+  return (
+    <svg className="h-7 w-7 text-[#5d9691]" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+      <path d="M13.5 38.5C11.1 27.2 17.8 17.3 29.2 11.5c2.5 9.9.3 20.7-7.1 28.1-2.3 2.3-5.1 4-8.6 5.1Z" fill="#0b2c34" />
+      <path d="M18.5 42.7c10.5-15.3 22-25.2 34.6-29.5.9 11.5-5.3 21.8-16 27-5.6 2.7-11.7 3.5-18.6 2.5Z" fill="currentColor" />
+      <path d="M24.1 50.1c8.4-12.4 17.9-19.6 28.4-21.6-.6 9.7-6.4 17.7-15.2 21.2-4.1 1.6-8.4 1.8-13.2.4Z" fill="#4f8f83" />
+      <path d="M15 40.4c10.4-8 21.3-14.4 36.2-23.1" stroke="#d5e8df" strokeWidth="3.2" strokeLinecap="round" />
+      <path d="M23.8 49.1c7.9-6.9 16-12.2 27-18.3" stroke="#d5e8df" strokeWidth="2.8" strokeLinecap="round" />
+      <path d="M13.2 40.8c1.9 5.9 6.5 9.7 13.8 11.6" stroke="#0b2c34" strokeWidth="3.2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function Header() {
   return (
     <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
-      <a href="/" className="flex items-center gap-3">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0b2c34] font-semibold text-white shadow-2xl shadow-slate-950/15">K</div>
-        <div>
-          <div className="text-xl font-semibold tracking-tight">KinHarbour</div>
-          <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#758a82]">Care clarity</div>
-        </div>
+      <a href="/" className="flex items-center gap-2 text-[#0b2c34]">
+        <KinHarbourLogo />
+        <div className="text-xl font-semibold tracking-tight">KinHarbour</div>
       </a>
 
       <div className="hidden items-center gap-7 text-sm font-semibold text-[#53666a] lg:flex">
@@ -45,8 +55,8 @@ function Header() {
         <a href="/dashboard" className="transition hover:text-[#0b2c34]">Resources</a>
       </div>
 
-      <a href="/assessment" className="inline-flex items-center gap-2 rounded-full bg-[#0b2c34] px-5 py-3 text-sm font-semibold text-white shadow-2xl shadow-slate-950/15 transition hover:-translate-y-0.5">
-        Start Free Assessment
+      <a href="/assessment" className="inline-flex items-center gap-2 rounded-full bg-[#0b2c34] px-5 py-3 text-sm font-semibold !text-white shadow-2xl shadow-slate-950/15 transition hover:-translate-y-0.5">
+        Begin Assessment
       </a>
     </nav>
   );
