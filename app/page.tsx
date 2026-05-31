@@ -44,15 +44,6 @@ const dashboardModes = {
     checklist: "Discharge Checklist (PDF)",
     quote: "Tom, Brisbane: Dad discharged Friday. Need an urgent plan by Thursday.",
   },
-  "Remote Family": {
-    stage: "Remote Coordination",
-    chip: "Remote Family",
-    steps: ["Share dashboard with siblings", "Assign decision roles", "Schedule family call", "Agree on care priorities"],
-    providers: ["KinHarbour Concierge", "Family Mediator", "Care Coordinator", "Local Advocate"],
-    budget: "from $990",
-    checklist: "Family Planning Checklist (PDF)",
-    quote: "Emma, Perth: My siblings are in Sydney. We needed one shared plan.",
-  },
 } as const;
 
 type DashboardMode = keyof typeof dashboardModes;
