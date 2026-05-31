@@ -1,183 +1,294 @@
+"use client";
+
+import { useState } from "react";
+import { motion } from "motion/react";
 import {
   ArrowRight,
   BarChart3,
   Building2,
   CheckCircle2,
-  Clock,
+  ClipboardCheck,
+  Download,
   FileHeart,
-  Home as HomeIcon,
-  MessageCircle,
+  Home,
   ShieldCheck,
   Sparkles,
   Users,
 } from "lucide-react";
 
-const metrics = [
-  ["5 min", "guided assessment"],
-  ["4", "care pathways"],
-  ["1", "family command centre"],
+const dashboardModes = {
+  "Home Support": {
+    stage: "Home Care Assessment",
+    chip: "Home Support",
+    steps: ["Complete ACAT assessment", "Register with My Aged Care", "Request Home Care Package", "Compare Level 2–3 providers"],
+    providers: ["BaptistCare", "HammondCare", "Uniting Care", "COTA Home Care"],
+    budget: "$22,000 – $28,000 / yr",
+    checklist: "Home Care Checklist (PDF)",
+    quote: "Sarah, Melbourne: Mum wants to stay home. Level 2 package likely.",
+  },
+  "Residential Care": {
+    stage: "Residential Placement",
+    chip: "Residential Care",
+    steps: ["Confirm residential ACAT approval", "Review accommodation funding", "Shortlist 3–5 homes", "Arrange facility tours"],
+    providers: ["Regis Aged Care", "Estia Health", "Japara Healthcare", "Bolton Clarke"],
+    budget: "$65,000 – $95,000 / yr",
+    checklist: "Residential Tour Checklist (PDF)",
+    quote: "James, Sydney: Dad needs memory support. Touring 3 homes this week.",
+  },
+  "Urgent Discharge": {
+    stage: "Hospital Discharge Planning",
+    chip: "Urgent Discharge",
+    steps: ["Speak to discharge planner", "Request urgent ACAT", "Arrange interim home care", "Identify long-term pathway"],
+    providers: ["Interim Home Care", "Transition Care Program", "Respite Options", "Care Coordinator"],
+    budget: "$1,250 – $2,500 / wk",
+    checklist: "Discharge Checklist (PDF)",
+    quote: "Tom, Brisbane: Dad discharged Friday. Need an urgent plan by Thursday.",
+  },
+  "Remote Family": {
+    stage: "Remote Coordination",
+    chip: "Remote Family",
+    steps: ["Share dashboard with siblings", "Assign decision roles", "Schedule family call", "Agree on care priorities"],
+    providers: ["KinHarbour Concierge", "Family Mediator", "Care Coordinator", "Local Advocate"],
+    budget: "from $990",
+    checklist: "Family Planning Checklist (PDF)",
+    quote: "Emma, Perth: My siblings are in Sydney. We needed one shared plan.",
+  },
+} as const;
+
+type DashboardMode = keyof typeof dashboardModes;
+
+const whatWeDo = [
+  { icon: ClipboardCheck, title: "Answer questions", text: "A few simple questions about your loved one’s needs." },
+  { icon: FileHeart, title: "Get a recommendation", text: "We compare options, likely costs and suitable providers." },
+  { icon: Users, title: "Save & share your plan", text: "Keep guidance in one place and involve the whole family." },
 ];
 
-const decisionCards = [
-  { icon: HomeIcon, title: "Stay at home", text: "Understand whether light or structured home support is enough for now." },
-  { icon: Building2, title: "Residential care", text: "Know when to start comparing facilities, respite and permanent options." },
-  { icon: Clock, title: "Urgent transition", text: "Create a practical 72-hour plan when hospital discharge or safety is pressing." },
+const reviews = [
+  {
+    quote: "It explained everything so clearly, I finally understood what Mum was entitled to.",
+    name: "Sarah, Melbourne",
+    role: "Daughter",
+  },
+  {
+    quote: "We were overwhelmed — KinHarbour helped us figure out exactly what to do next.",
+    name: "James, Sydney",
+    role: "Son",
+  },
+  {
+    quote: "The assessment took five minutes and the recommendation was spot on for Dad’s situation.",
+    name: "Emily, Brisbane",
+    role: "Daughter",
+  },
 ];
 
-const journey = [
-  "Answer calm, plain-English questions",
-  "Receive an explainable recommendation",
-  "Compare providers and funding options",
-  "Invite family into one shared decision space",
-];
+function cx(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ");
+}
 
-export default function Home() {
+function Header() {
   return (
-    <main className="kh-shell min-h-screen text-[#10251f]">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
-        <a href="/" className="flex items-center gap-3">
-          <span className="flex h-12 w-12 items-center justify-center rounded-[1.15rem] bg-[#123d34] text-lg font-semibold text-white shadow-xl shadow-emerald-950/20">K</span>
-          <div>
-            <p className="text-xl font-semibold tracking-tight">KinHarbour</p>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#789089]">Care clarity</p>
-          </div>
-        </a>
-        <div className="hidden items-center gap-2 rounded-full border border-white/70 bg-white/55 p-1 shadow-sm backdrop-blur md:flex">
-          {["How it works", "Product", "Dashboard"].map((item) => (
-            <a key={item} href={`#${item.toLowerCase().replaceAll(" ", "-")}`} className="rounded-full px-4 py-2 text-sm font-semibold text-[#62756e] transition hover:bg-white hover:text-[#123d34]">
-              {item}
-            </a>
-          ))}
+    <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
+      <a href="/" className="flex items-center gap-3">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0b2c34] font-semibold text-white shadow-2xl shadow-slate-950/15">K</div>
+        <div>
+          <div className="text-xl font-semibold tracking-tight">KinHarbour</div>
+          <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#758a82]">Care clarity</div>
         </div>
-        <a href="/assessment" className="inline-flex items-center gap-2 rounded-full bg-[#123d34] px-5 py-3 text-sm font-semibold text-white shadow-2xl shadow-emerald-950/20 transition hover:-translate-y-0.5 hover:bg-[#082720]">
-          Start <ArrowRight className="h-4 w-4" />
-        </a>
-      </nav>
+      </a>
 
-      <section className="mx-auto grid min-h-[calc(100vh-96px)] max-w-7xl gap-12 px-6 pb-20 pt-8 lg:grid-cols-[1fr_0.95fr] lg:items-center">
-        <div className="reveal-up">
-          <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-white/70 bg-white/65 px-4 py-2 text-sm font-semibold text-[#31594d] shadow-sm backdrop-blur">
-            <Sparkles className="h-4 w-4 text-[#bd8055]" />
-            Built for families navigating aged care, not for lead generation
+      <div className="hidden items-center gap-7 text-sm font-semibold text-[#53666a] lg:flex">
+        <a href="#what-we-do" className="transition hover:text-[#0b2c34]">How it works</a>
+        <a href="/why-kinharbour" className="transition hover:text-[#0b2c34]">Why KinHarbour</a>
+        <a href="/providers" className="transition hover:text-[#0b2c34]">Care options</a>
+        <a href="/funding" className="transition hover:text-[#0b2c34]">Costs</a>
+        <a href="/dashboard" className="transition hover:text-[#0b2c34]">Resources</a>
+      </div>
+
+      <div className="flex items-center gap-4">
+        <a href="/dashboard" className="hidden text-sm font-semibold text-[#53666a] transition hover:text-[#0b2c34] sm:block">Log in</a>
+        <a href="/assessment" className="inline-flex items-center gap-2 rounded-full bg-[#0b2c34] px-5 py-3 text-sm font-semibold text-white shadow-2xl shadow-slate-950/15 transition hover:-translate-y-0.5">
+          Start Free Assessment <ArrowRight className="h-4 w-4" />
+        </a>
+      </div>
+    </nav>
+  );
+}
+
+function DashboardPreview() {
+  const [mode, setMode] = useState<DashboardMode>("Home Support");
+  const data = dashboardModes[mode];
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65, delay: 0.1 }} className="relative">
+      <div className="mb-5 flex flex-wrap justify-center gap-3 lg:justify-start">
+        {(Object.keys(dashboardModes) as DashboardMode[]).map((item) => (
+          <button
+            key={item}
+            onClick={() => setMode(item)}
+            className={cx(
+              "rounded-full border px-5 py-2.5 text-sm font-semibold transition",
+              mode === item
+                ? "border-[#0b2c34] bg-[#0b2c34] text-white shadow-lg shadow-slate-950/15"
+                : "border-[#d9dfda] bg-white/72 text-[#53666a] hover:bg-white"
+            )}
+          >
+            {item}
+          </button>
+        ))}
+      </div>
+
+      <div className="relative mx-auto max-w-[620px] rounded-[2rem] border border-white/70 bg-white/68 p-3 shadow-[0_28px_90px_rgba(61,45,28,.14)] backdrop-blur-2xl lg:mx-0">
+        <div className="overflow-hidden rounded-[1.65rem] bg-white">
+          <div className="flex items-center justify-between bg-[#0b2c34] px-5 py-4 text-white">
+            <div className="flex items-center gap-3">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/12"><ShieldCheck className="h-4 w-4" /></span>
+              <p className="font-semibold">Family Decision Dashboard</p>
+            </div>
+            <span className="rounded-full bg-white/12 px-3 py-1 text-xs font-semibold text-white/80">{data.chip}</span>
           </div>
-          <h1 className="max-w-5xl text-6xl font-semibold leading-[0.92] tracking-[-0.065em] text-[#10251f] md:text-8xl">
-            A calmer way to decide what care comes next.
+
+          <div className="p-6">
+            <div className="rounded-[1.5rem] bg-[#f4efe7] p-4">
+              <div className="flex items-center gap-4">
+                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#dfe9df]"><BarChart3 className="h-5 w-5 text-[#5e9d9c]" /></span>
+                <div>
+                  <p className="text-sm text-[#63747a]">Current Stage</p>
+                  <h3 className="text-xl font-semibold tracking-tight">{data.stage}</h3>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_.95fr]">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#89a697]">Recommended next steps</p>
+                <div className="mt-3 grid gap-2">
+                  {data.steps.map((step, index) => (
+                    <div key={step} className="flex items-center gap-3 text-sm">
+                      <span className={cx("flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold", index === 0 ? "bg-[#69aaa8] text-white" : "bg-[#ecf0ef] text-[#53666a]")}>{index + 1}</span>
+                      <span className={index === 0 ? "font-semibold text-[#10241f]" : "text-[#53666a]"}>{step}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#89a697]">Shortlisted providers</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {data.providers.map((provider) => (
+                    <span key={provider} className="rounded-full bg-[#edf1ef] px-3 py-1.5 text-xs font-semibold text-[#0b2c34]">{provider}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 grid gap-3 md:grid-cols-2">
+              <div className="rounded-[1.35rem] bg-[#f4f5f4] p-4">
+                <p className="text-sm text-[#63747a]">Budget Estimate</p>
+                <p className="mt-1 text-lg font-semibold text-[#a57b41]">{data.budget}</p>
+              </div>
+              <div className="rounded-[1.35rem] bg-[#eff5f4] p-4">
+                <div className="flex items-center gap-3 text-[#4f8b8a]"><Download className="h-4 w-4" /><p className="font-semibold">Download Checklist</p></div>
+                <p className="mt-1 text-sm text-[#63747a]">{data.checklist}</p>
+              </div>
+            </div>
+
+            <div className="mt-4 rounded-[1.35rem] border border-[#dde5e1] bg-white px-5 py-4 text-sm italic text-[#53666a]">
+              “{data.quote}”
+            </div>
+          </div>
+        </div>
+      </div>
+      <p className="mt-4 text-center text-xs text-[#93a09b] lg:text-left">Illustrative snapshot of what your dashboard may show after completing an assessment.</p>
+    </motion.div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <main className="kh-shell min-h-screen overflow-hidden bg-[#f8f1e8] text-[#10241f]">
+      <Header />
+
+      <section className="mx-auto grid min-h-[calc(100vh-96px)] max-w-7xl gap-14 px-6 pb-28 pt-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
+        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
+          <div className="mb-7 inline-flex items-center gap-3 rounded-full border border-[#cfe0d8] bg-[#edf5f2]/75 px-4 py-2 text-sm font-semibold text-[#4d8d8b] shadow-sm backdrop-blur-xl">
+            <Sparkles className="h-4 w-4 text-[#4d8d8b]" /> Built for Australian families
+          </div>
+          <h1 className="max-w-5xl text-6xl font-semibold leading-[0.92] tracking-[-0.07em] md:text-8xl">
+            Find the right aged care path, <span className="text-[#5d9691]">step by step.</span>
           </h1>
           <p className="mt-8 max-w-2xl text-xl leading-9 text-[#62756e]">
-            KinHarbour turns aged-care confusion into a guided assessment, explainable pathway, provider shortlist, funding view and shared family dashboard.
+            KinHarbour brings aged care guidance, likely costs, a shared family planner and personalised recommendations into one all-in-one place.
           </p>
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-            <a href="/assessment" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#123d34] px-8 py-4 text-base font-semibold text-white shadow-2xl shadow-emerald-950/20 transition hover:-translate-y-1 hover:bg-[#082720]">
-              Start assessment <ArrowRight className="h-4 w-4" />
+            <a href="/assessment" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0b2c34] px-8 py-4 font-semibold text-white shadow-2xl shadow-slate-950/15 transition hover:-translate-y-1">
+              Start Free Assessment <ArrowRight className="h-4 w-4" />
             </a>
-            <a href="/recommendation" className="inline-flex items-center justify-center gap-2 rounded-full border border-white/75 bg-white/70 px-8 py-4 text-base font-semibold text-[#123d34] shadow-lg shadow-stone-900/5 backdrop-blur transition hover:-translate-y-1 hover:bg-white">
-              View demo result
+            <a href="/family" className="inline-flex items-center justify-center gap-2 rounded-full border border-[#0b2c34] bg-transparent px-8 py-4 font-semibold text-[#0b2c34] transition hover:-translate-y-1 hover:bg-white/70">
+              Book a Strategy Call
             </a>
           </div>
-          <div className="mt-10 grid gap-3 sm:grid-cols-3">
-            {metrics.map(([value, label]) => (
-              <div key={label} className="glass rounded-[1.6rem] p-5">
-                <p className="text-3xl font-semibold text-[#123d34]">{value}</p>
-                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#789089]">{label}</p>
-              </div>
+          <div className="mt-9 flex flex-wrap gap-x-7 gap-y-3 text-sm font-medium text-[#7c8c87]">
+            {["Independent guidance", "Australian-built", "Designed for overwhelmed families, not experts"].map((item) => (
+              <div key={item} className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-[#5d9691]" />{item}</div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
-        <div className="relative reveal-up lg:delay-150">
-          <div className="absolute -left-8 top-12 h-32 w-32 rounded-full bg-[#79aaa0]/30 blur-3xl" />
-          <div className="absolute -right-6 bottom-10 h-40 w-40 rounded-full bg-[#bd8055]/20 blur-3xl" />
-          <div className="glass float-card relative rounded-[2.4rem] p-4">
-            <div className="deep-card overflow-hidden rounded-[2rem] p-6 text-white">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-sm font-semibold text-[#cfe2dd]">CarePath recommendation</p>
-                  <h2 className="mt-4 text-4xl font-semibold tracking-[-0.04em]">Home care bridge with residential planning</h2>
-                </div>
-                <span className="rounded-full bg-white/12 px-3 py-2 text-sm font-semibold backdrop-blur">87%</span>
-              </div>
-              <div className="mt-8 grid gap-3">
-                {[
-                  [ShieldCheck, "Risk flags", "Living alone, mobility support, family capacity pressure"],
-                  [BarChart3, "Next step", "Book ACAT, prepare documents, compare 3 providers"],
-                  [Users, "Family", "Invite siblings to vote, comment and track decisions"],
-                ].map(([Icon, label, text]) => (
-                  <div key={label as string} className="rounded-[1.35rem] border border-white/10 bg-white/10 p-4 backdrop-blur">
-                    <div className="flex gap-3">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/12"><Icon className="h-5 w-5" /></span>
-                      <div><p className="text-sm font-semibold text-[#cfe2dd]">{label as string}</p><p className="mt-1 leading-6">{text as string}</p></div>
+        <DashboardPreview />
+      </section>
+
+      <section id="what-we-do" className="mx-auto max-w-7xl px-6 pb-28 pt-6">
+        <div className="rounded-[2rem] border border-white/70 bg-white/45 p-7 shadow-sm backdrop-blur-xl md:p-9">
+          <div className="mb-8 text-center">
+            <p className="text-sm font-bold uppercase tracking-[0.22em] text-[#89a697]">What we do</p>
+            <h2 className="mt-3 text-4xl font-semibold tracking-[-0.045em] md:text-5xl">Simple, personal, shareable guidance.</h2>
+          </div>
+          <div className="grid gap-7 md:grid-cols-3">
+            {whatWeDo.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <div key={item.title} className="relative rounded-[1.7rem] border border-[#dfe7e2] bg-white/80 p-6 shadow-[0_14px_42px_rgba(61,45,28,.08)]">
+                  <div className="absolute -top-4 left-1/2 flex h-8 w-8 -translate-x-1/2 items-center justify-center rounded-full border border-[#dfe7e2] bg-white text-xs font-bold text-[#53666a]">{index + 1}</div>
+                  <div className="flex items-start gap-4">
+                    <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#e5efec]"><Icon className="h-6 w-6 text-[#5d9691]" /></span>
+                    <div>
+                      <h3 className="text-xl font-semibold tracking-tight">{item.title}</h3>
+                      <p className="mt-2 leading-7 text-[#62756e]">{item.text}</p>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-            <div className="grid gap-3 p-4 md:grid-cols-3">
-              {decisionCards.map((card) => {
-                const Icon = card.icon;
-                return (
-                  <div key={card.title} className="rounded-[1.5rem] bg-white/70 p-4 shadow-sm backdrop-blur">
-                    <Icon className="h-5 w-5 text-[#123d34]" />
-                    <p className="mt-3 font-semibold">{card.title}</p>
-                    <p className="mt-1 text-sm leading-5 text-[#62756e]">{card.text}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="how-it-works" className="mx-auto max-w-7xl px-6 py-20">
-        <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
-          <div><p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#bd8055]">How it works</p><h2 className="mt-4 text-5xl font-semibold leading-[.95] tracking-[-0.055em] md:text-7xl">One journey. No clutter.</h2></div>
-          <p className="text-xl leading-9 text-[#62756e]">The app should feel like a concierge-led decision room: clear, beautiful and useful from the first screen.</p>
-        </div>
-        <div className="mt-12 grid gap-5 md:grid-cols-4">
-          {journey.map((item, index) => (
-            <article key={item} className="card-lift rounded-[2rem] p-6 transition hover:-translate-y-1">
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#123d34] text-sm font-bold text-white">{index + 1}</span>
-              <p className="mt-6 text-xl font-semibold tracking-tight">{item}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section id="product" className="px-6 py-20">
-        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.6rem] bg-[#10251f] p-6 text-white shadow-2xl shadow-emerald-950/25 md:p-10">
-          <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#d7af8a]">Core product</p>
-              <h2 className="mt-4 text-5xl font-semibold leading-[.96] tracking-[-0.055em] md:text-7xl">A decision engine with a dashboard attached.</h2>
-              <p className="mt-6 text-lg leading-8 text-white/70">Assessment, recommendation, shortlist, funding and family collaboration should work as one flow, not scattered pages.</p>
-            </div>
-            <div className="grid gap-4">
-              {[
-                [FileHeart, "Explainable recommendation", "Pathway, urgency, risk flags and next action plan."],
-                [MessageCircle, "Family alignment", "Votes, notes and controlled sharing for siblings and carers."],
-                [CheckCircle2, "Decision-ready shortlist", "Provider cards, status, notes, match criteria and comparison."],
-              ].map(([Icon, title, text]) => (
-                <div key={title as string} className="rounded-[1.7rem] border border-white/10 bg-white/10 p-5 backdrop-blur">
-                  <div className="flex gap-4"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-[#123d34]"><Icon className="h-5 w-5" /></span><div><h3 className="text-xl font-semibold">{title as string}</h3><p className="mt-2 leading-7 text-white/70">{text as string}</p></div></div>
                 </div>
-              ))}
-            </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      <section id="dashboard" className="mx-auto max-w-7xl px-6 py-20">
-        <div className="card-lift rounded-[2.6rem] p-8 md:p-12">
-          <div className="grid gap-8 lg:grid-cols-[1fr_0.8fr] lg:items-center">
+      <section className="mx-auto max-w-7xl px-6 pb-24">
+        <div className="rounded-[2rem] bg-[#eef6f3]/80 p-7 shadow-sm backdrop-blur-xl md:p-9">
+          <div className="grid gap-8 lg:grid-cols-[0.9fr_2.1fr] lg:items-center">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#bd8055]">Next step</p>
-              <h2 className="mt-4 text-5xl font-semibold leading-[.96] tracking-[-0.055em] md:text-7xl">Pull the family into one shared plan.</h2>
-              <p className="mt-6 text-lg leading-8 text-[#62756e]">After the recommendation, families need confidence, coordination and a way to keep moving.</p>
+              <h2 className="text-4xl font-semibold leading-[1] tracking-[-0.05em]">Trusted by Australian families</h2>
+              <p className="mt-4 leading-7 text-[#62756e]">Designed for elderly Australians and the families who care for them.</p>
+              <div className="mt-6 flex items-end gap-3">
+                <span className="text-4xl font-semibold">4.9</span>
+                <span className="pb-1 text-lg tracking-[0.18em] text-[#b88745]">★★★★★</span>
+              </div>
+              <p className="mt-1 text-sm text-[#62756e]">from Australian family feedback</p>
+              <p className="mt-6 flex items-center gap-2 text-sm text-[#62756e]"><ShieldCheck className="h-4 w-4 text-[#5d9691]" /> Your information is secure and private.</p>
             </div>
-            <div className="grid gap-3">
-              {["Saved assessment", "Recommendation report", "Provider shortlist", "Funding view", "Family discussion"].map((item) => (
-                <a key={item} href={item === "Saved assessment" ? "/assessment" : item === "Recommendation report" ? "/recommendation" : item === "Provider shortlist" ? "/shortlist" : item === "Funding view" ? "/funding" : "/family"} className="group flex items-center justify-between rounded-[1.4rem] bg-[#f8f3ea] px-5 py-4 font-semibold transition hover:bg-[#dfe9df]">
-                  {item}<ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-                </a>
+            <div className="grid gap-5 md:grid-cols-3">
+              {reviews.map((review) => (
+                <div key={review.name} className="rounded-[1.6rem] border border-white/70 bg-white/86 p-6 shadow-[0_14px_42px_rgba(61,45,28,.08)]">
+                  <div className="mb-4 flex items-center justify-between">
+                    <span className="text-3xl leading-none text-[#5d9691]">“</span>
+                    <span className="text-sm tracking-[0.16em] text-[#b88745]">★★★★★</span>
+                  </div>
+                  <p className="min-h-[108px] text-[15px] italic leading-7 text-[#43565c]">“{review.quote}”</p>
+                  <div className="mt-5 border-t border-[#e7ede9] pt-4">
+                    <p className="font-semibold">{review.name}</p>
+                    <p className="text-sm text-[#62756e]">{review.role}</p>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
