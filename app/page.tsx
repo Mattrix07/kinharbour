@@ -74,15 +74,22 @@ function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
+function LeafLogo() {
+  return (
+    <svg className="h-7 w-7 text-[#5d9691]" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <path d="M9 29c10.5-1.2 18.8-8.8 21.7-19.7 6.5 5.7 8.4 15.6 3.9 23.2C29.8 40.7 18.8 42 11.8 35.8 10 34.2 9 31.8 9 29Z" fill="currentColor" />
+      <path d="M14 32c7.5-3.5 13.8-8.8 18.3-16.6" stroke="#0b2c34" strokeWidth="3" strokeLinecap="round" />
+      <path d="M9.5 29.5c-1.5 5.5.2 9.7 5.2 12.5" stroke="#0b2c34" strokeWidth="3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function Header() {
   return (
     <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
-      <a href="/" className="flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#0b2c34] text-sm font-semibold text-white shadow-2xl shadow-slate-950/15">K</div>
-        <div>
-          <div className="text-lg font-semibold tracking-tight">KinHarbour</div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#758a82]">Care clarity</div>
-        </div>
+      <a href="/" className="flex items-center gap-2 text-[#0b2c34]">
+        <LeafLogo />
+        <div className="text-xl font-semibold tracking-tight">KinHarbour</div>
       </a>
 
       <div className="hidden items-center gap-6 text-sm font-semibold text-[#53666a] lg:flex">
@@ -95,8 +102,8 @@ function Header() {
 
       <div className="flex items-center gap-4">
         <a href="/dashboard" className="hidden text-sm font-semibold text-[#53666a] transition hover:text-[#0b2c34] sm:block">Log in</a>
-        <a href="/assessment" className="inline-flex items-center gap-2 rounded-full bg-[#0b2c34] px-4 py-2.5 text-sm font-semibold text-white shadow-2xl shadow-slate-950/15 transition hover:-translate-y-0.5">
-          Start Free Assessment <ArrowRight className="h-4 w-4" />
+        <a href="/assessment" className="inline-flex items-center gap-2 rounded-full bg-[#0b2c34] px-4 py-2.5 text-sm font-semibold !text-white shadow-2xl shadow-slate-950/15 transition hover:-translate-y-0.5">
+          Begin Assessment <ArrowRight className="h-4 w-4" />
         </a>
       </div>
     </nav>
@@ -115,7 +122,7 @@ function DashboardPreview() {
             key={item}
             onClick={() => setMode(item)}
             className={cx(
-              "rounded-full border px-4 py-2 text-xs font-semibold transition",
+              "rounded-full border px-3.5 py-1.5 text-[11px] font-medium tracking-tight transition",
               mode === item
                 ? "border-[#0b2c34] bg-[#0b2c34] text-white shadow-lg shadow-slate-950/15"
                 : "border-[#d9dfda] bg-white/72 text-[#53666a] hover:bg-white"
@@ -209,8 +216,8 @@ export default function HomePage() {
             KinHarbour brings aged care guidance, likely costs, a shared family planner and personalised recommendations into one all-in-one place.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <a href="/assessment" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0b2c34] px-6 py-3.5 text-sm font-semibold text-white shadow-2xl shadow-slate-950/15 transition hover:-translate-y-1">
-              Start Free Assessment <ArrowRight className="h-4 w-4" />
+            <a href="/assessment" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0b2c34] px-6 py-3.5 text-sm font-semibold !text-white shadow-2xl shadow-slate-950/15 transition hover:-translate-y-1">
+              Begin Assessment <ArrowRight className="h-4 w-4" />
             </a>
             <a href="/family" className="inline-flex items-center justify-center gap-2 rounded-full border border-[#0b2c34] bg-transparent px-6 py-3.5 text-sm font-semibold text-[#0b2c34] transition hover:-translate-y-1 hover:bg-white/70">
               Book a Strategy Call
