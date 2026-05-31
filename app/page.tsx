@@ -5,12 +5,10 @@ import { motion } from "motion/react";
 import {
   ArrowRight,
   BarChart3,
-  Building2,
   CheckCircle2,
   ClipboardCheck,
   Download,
   FileHeart,
-  Home,
   ShieldCheck,
   Sparkles,
   Users,
@@ -128,28 +126,28 @@ function DashboardPreview() {
         ))}
       </div>
 
-      <div className="relative mx-auto max-w-[620px] rounded-[2rem] border border-white/70 bg-white/68 p-3 shadow-[0_28px_90px_rgba(61,45,28,.14)] backdrop-blur-2xl lg:mx-0">
-        <div className="overflow-hidden rounded-[1.65rem] bg-white">
-          <div className="flex items-center justify-between bg-[#0b2c34] px-5 py-4 text-white">
+      <div className="relative mx-auto max-w-[465px] rounded-[1.5rem] border border-white/70 bg-white/68 p-2.5 shadow-[0_22px_70px_rgba(61,45,28,.12)] backdrop-blur-2xl lg:mx-0">
+        <div className="overflow-hidden rounded-[1.25rem] bg-white">
+          <div className="flex items-center justify-between bg-[#0b2c34] px-4 py-3 text-white">
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/12"><ShieldCheck className="h-4 w-4" /></span>
-              <p className="font-semibold">Family Decision Dashboard</p>
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/12"><ShieldCheck className="h-3.5 w-3.5" /></span>
+              <p className="text-sm font-semibold">Family Decision Dashboard</p>
             </div>
             <span className="rounded-full bg-white/12 px-3 py-1 text-xs font-semibold text-white/80">{data.chip}</span>
           </div>
 
-          <div className="p-6">
-            <div className="rounded-[1.5rem] bg-[#f4efe7] p-4">
+          <div className="p-4">
+            <div className="rounded-[1.15rem] bg-[#f4efe7] p-3">
               <div className="flex items-center gap-4">
-                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#dfe9df]"><BarChart3 className="h-5 w-5 text-[#5e9d9c]" /></span>
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#dfe9df]"><BarChart3 className="h-4 w-4 text-[#5e9d9c]" /></span>
                 <div>
                   <p className="text-sm text-[#63747a]">Current Stage</p>
-                  <h3 className="text-xl font-semibold tracking-tight">{data.stage}</h3>
+                  <h3 className="text-base font-semibold tracking-tight">{data.stage}</h3>
                 </div>
               </div>
             </div>
 
-            <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_.95fr]">
+            <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_.95fr]">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#89a697]">Recommended next steps</p>
                 <div className="mt-3 grid gap-2">
@@ -172,18 +170,18 @@ function DashboardPreview() {
               </div>
             </div>
 
-            <div className="mt-5 grid gap-3 md:grid-cols-2">
-              <div className="rounded-[1.35rem] bg-[#f4f5f4] p-4">
+            <div className="mt-4 grid gap-2.5 md:grid-cols-2">
+              <div className="rounded-[1.1rem] bg-[#f4f5f4] p-3">
                 <p className="text-sm text-[#63747a]">Budget Estimate</p>
-                <p className="mt-1 text-lg font-semibold text-[#a57b41]">{data.budget}</p>
+                <p className="mt-1 text-sm font-semibold text-[#a57b41]">{data.budget}</p>
               </div>
-              <div className="rounded-[1.35rem] bg-[#eff5f4] p-4">
-                <div className="flex items-center gap-3 text-[#4f8b8a]"><Download className="h-4 w-4" /><p className="font-semibold">Download Checklist</p></div>
+              <div className="rounded-[1.1rem] bg-[#eff5f4] p-3">
+                <div className="flex items-center gap-2 text-[#4f8b8a]"><Download className="h-3.5 w-3.5" /><p className="text-sm font-semibold">Download Checklist</p></div>
                 <p className="mt-1 text-sm text-[#63747a]">{data.checklist}</p>
               </div>
             </div>
 
-            <div className="mt-4 rounded-[1.35rem] border border-[#dde5e1] bg-white px-5 py-4 text-sm italic text-[#53666a]">
+            <div className="mt-3 rounded-[1.1rem] border border-[#dde5e1] bg-white px-4 py-3 text-xs italic text-[#53666a]">
               “{data.quote}”
             </div>
           </div>
