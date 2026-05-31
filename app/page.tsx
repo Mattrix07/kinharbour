@@ -120,13 +120,13 @@ function DashboardPreview() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65, delay: 0.1 }} className="relative">
-      <div className="mb-5 flex flex-wrap justify-center gap-3 lg:justify-start">
+      <div className="mb-4 flex flex-wrap justify-center gap-2.5 lg:justify-start">
         {(Object.keys(dashboardModes) as DashboardMode[]).map((item) => (
           <button
             key={item}
             onClick={() => setMode(item)}
             className={cx(
-              "rounded-full border px-5 py-2.5 text-sm font-semibold transition",
+              "rounded-full border px-4 py-2 text-xs font-semibold transition",
               mode === item
                 ? "border-[#0b2c34] bg-[#0b2c34] text-white shadow-lg shadow-slate-950/15"
                 : "border-[#d9dfda] bg-white/72 text-[#53666a] hover:bg-white"
@@ -213,7 +213,7 @@ export default function HomePage() {
           <div className="mb-7 inline-flex items-center gap-3 rounded-full border border-[#cfe0d8] bg-[#edf5f2]/75 px-4 py-2 text-sm font-semibold text-[#4d8d8b] shadow-sm backdrop-blur-xl">
             <Sparkles className="h-4 w-4 text-[#4d8d8b]" /> Built for Australian families
           </div>
-          <h1 className="max-w-5xl text-6xl font-semibold leading-[0.92] tracking-[-0.07em] md:text-8xl">
+          <h1 className="max-w-5xl text-[4.9rem] font-semibold leading-[0.92] tracking-[-0.07em] md:text-[7.15rem]">
             Find the right aged care path, <span className="text-[#5d9691]">step by step.</span>
           </h1>
           <p className="mt-8 max-w-2xl text-xl leading-9 text-[#62756e]">
