@@ -49,11 +49,11 @@ button, input, select, textarea { font: inherit; }
   position: fixed;
   inset: 0;
   z-index: -2;
-  background-image:
-    linear-gradient(rgba(16,37,31,.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(16,37,31,.045) 1px, transparent 1px);
-  background-size: 56px 56px;
-  mask-image: linear-gradient(to bottom, black 0%, transparent 78%);
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 12% 12%, rgba(84,139,124,.22), transparent 30rem),
+    radial-gradient(circle at 86% 8%, rgba(190,127,84,.16), transparent 28rem),
+    linear-gradient(180deg, #fffaf2 0%, #f8f1e8 100%);
 }
 .kh-shell::after {
   content: "";
@@ -61,9 +61,10 @@ button, input, select, textarea { font: inherit; }
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image: radial-gradient(rgba(16,37,31,.10) .6px, transparent .6px);
-  background-size: 18px 18px;
-  opacity: .22;
+  background-image: radial-gradient(rgba(93,150,145,.20) .7px, transparent .7px);
+  background-size: 22px 22px;
+  opacity: .20;
+  mask-image: linear-gradient(to bottom, black 0%, transparent 72%);
 }
 
 .glass {
